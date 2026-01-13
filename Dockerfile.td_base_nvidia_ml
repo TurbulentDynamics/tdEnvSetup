@@ -3,58 +3,52 @@
 FROM td_base
 #FROM turbulentdynamics/td_base
 
-# Install python modules
-RUN pip install --upgrade pip
-RUN pip install -U --user --trusted-host pypi.python.org h5py pandas matplotlib dask pillow wheel setuptools mock 'future>=0.17.1'
-RUN pip install -U --user jupyterlab
+# Install python3 and pip
+RUN sudo apt update && sudo apt install -y python3-pip python3-venv
 
+# Create virtual environment for better dependency isolation
+RUN python3 -m venv /home/tduser/mlenv
+ENV PATH="/home/tduser/mlenv/bin:$PATH"
 
-#Install Tensorflow from source to use all CPU instructions
-RUN pip install -U --user keras_applications==1.0.6 keras_preprocessing==1.0.5 --no-deps
+# Install latest Python ML packages with PyTorch (as of January 2025)
+# PyTorch wheels include optimized CPU instructions (AVX2, FMA, SSE4.2) out of the box
+RUN pip install --upgrade pip setuptools wheel && \
+    pip install \
+    torch==2.5.1 \
+    torchvision==0.20.1 \
+    torchaudio==2.5.1 \
+    torchtext==0.18.0 \
+    numpy==2.1.3 \
+    pandas==2.2.3 \
+    matplotlib==3.9.2 \
+    scikit-learn==1.5.2 \
+    scipy==1.14.1 \
+    h5py==3.12.1 \
+    pillow==11.0.0 \
+    jupyterlab==4.3.3 \
+    ipython==8.30.0 \
+    seaborn==0.13.2
 
-#Install bazel to build tensorflow https://docs.bazel.build/versions/master/install-ubuntu.html 
-ARG BAZELVERSION=0.26.1
-RUN wget https://github.com/bazelbuild/bazel/releases/download/$BAZELVERSION/bazel-$BAZELVERSION-installer-linux-x86_64.sh
-RUN chmod +x bazel-$BAZELVERSION-installer-linux-x86_64.sh
-RUN ./bazel-$BAZELVERSION-installer-linux-x86_64.sh --user
-ENV export PATH="$PATH:$HOME/bin"
-
-RUN git clone https://github.com/tensorflow/tensorflow.git
-RUN cd tensorflow && git checkout v2.0.0
-
-#========================#https://gist.github.com/hiteshjasani/97c76d33c7649f281f9c7e2749f607ab
-ENV CI_BUILD_PYTHON=python
-ENV TF_NEED_CUDA=1
-ENV TF_CUDA_VERSION=10.0
-ENV TF_CUDNN_VERSION=7
-ENV TF_NEED_TENSORRT=0
-ENV TF_CUDA_COMPUTE_CAPABILITIES=7.5
-RUN sudo ln -s /usr/local/cuda/lib64/stubs/libcuda.so /usr/local/cuda/lib64/stubs/libcuda.so.1
-RUN LD_LIBRARY_PATH=/usr/local/cuda/lib64/stubs:${LD_LIBRARY_PATH}
-
-RUN cd tensorflow && tensorflow/tools/ci_build/builds/configured GPU
-
-RUN cd tensorflow && ~/bin/bazel build -c opt --config=cuda //tensorflow/tools/pip_package:build_pip_package
-RUN cd tensorflow && ./bazel-bin/tensorflow/tools/pip_package/build_pip_package /tmp/tensorflow_pkg
-RUN pip install -U --user /tmp/tensorflow_pkg/tensorflow-*.whl
-
-RUN pip install -U --user torchvision
+# Install additional ML and Deep Learning tools (latest versions)
+RUN pip install \
+    tensorboard==2.18.0 \
+    mlflow==2.17.2 \
+    optuna==4.1.0 \
+    transformers==4.47.1 \
+    timm==1.0.12 \
+    einops==0.8.0 \
+    lightning==2.4.0 \
+    accelerate==1.2.1 \
+    datasets==3.2.0 \
+    tokenizers==0.21.0 \
+    sentencepiece==0.2.0 \
+    wandb==0.18.7
 
 # References
-# https://www.tensorflow.org/install/install_sources
-# https://stackoverflow.com/questions/41293077/how-to-compile-tensorflow-with-sse4-2-and-avx-instructions
-# https://en.wikipedia.org/wiki/Advanced_Vector_Extensions#AVX2
-# https://en.wikipedia.org/wiki/SSE4
-# https://en.wikipedia.org/wiki/FMA_instruction_set
-# https://gcc.gnu.org/onlinedocs/gcc-7.1.0/gcc/x86-Options.html#x86-Options
-# https://gcc.gnu.org/onlinedocs/gcc-4.5.3/gcc/i386-and-x86_002d64-Options.html
-
-#Could use these to install pre-compiled binaries, HOWEVER, these will not use all CPU instructions available
-#RUN pip install -U --user tensorflow-gpu
-#RUN pip install -U --user tensorflow==2.0.0
-#RUN pip install -U --user tensorflow-gpu==2.0.0
-#RUN pip install -U --user tf-nightly-gpu 
-#========================
+# PyTorch wheels are optimized with AVX2, FMA, and SSE4.2 instructions
+# https://pytorch.org/get-started/locally/
+# For CUDA support, use pytorch.org index:
+# pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121
 
 
 

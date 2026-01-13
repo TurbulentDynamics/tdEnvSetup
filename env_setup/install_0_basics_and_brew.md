@@ -27,12 +27,12 @@ sudo apt install bazel
 
 # Install extra languages
 ```
-#Install Swift on Linux
-sudo apt-get install libc6-dev libcurl4-openssl-dev libedit2 libgcc-9-dev libpython3.8 libsqlite3-0 libstdc++-9-dev libxml2-dev libz3-dev pkg-config zlib1g-dev
-wget https://download.swift.org/swift-5.7.2-release/ubuntu2204/swift-5.7.2-RELEASE/swift-5.7.2-RELEASE-ubuntu22.04.tar.gz
-tar xzf swift-5.7.2-RELEASE-ubuntu22.04.tar.gz
-fish_add_path swift-5.7.2-RELEASE-ubuntu22.04/usr/bin
-echo fish_add_path swift-5.7.2-RELEASE-ubuntu22.04/usr/bin>>~/.config/fish/config.fish
+#Install Swift on Linux (Updated to Swift 6.0.3 - latest stable as of January 2025)
+sudo apt-get install libc6-dev libcurl4-openssl-dev libedit2 libgcc-11-dev libpython3.10 libsqlite3-0 libstdc++-11-dev libxml2-dev libz3-dev pkg-config zlib1g-dev
+wget https://download.swift.org/swift-6.0.3-release/ubuntu2204/swift-6.0.3-RELEASE/swift-6.0.3-RELEASE-ubuntu22.04.tar.gz
+tar xzf swift-6.0.3-RELEASE-ubuntu22.04.tar.gz
+fish_add_path swift-6.0.3-RELEASE-ubuntu22.04/usr/bin
+echo fish_add_path swift-6.0.3-RELEASE-ubuntu22.04/usr/bin>>~/.config/fish/config.fish
 
 #Install Rust
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh

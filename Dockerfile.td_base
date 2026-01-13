@@ -1,11 +1,13 @@
-#Use a base nvidia container from https://hub.docker.com/r/nvidia/cuda/
-From nvidia/cuda:11.8.0-cudnn8-runtime-ubuntu22.04
+#Use the latest NVIDIA CUDA container from https://hub.docker.com/r/nvidia/cuda/
+# Updated to CUDA 12.4.1 with cuDNN 9 (latest as of January 2025)
+FROM nvidia/cuda:12.4.1-cudnn9-runtime-ubuntu22.04
 
-# additional packages
-RUN apt update
-RUN apt install -y apt-utils curl wget vim git zsh sudo unzip
-RUN apt install -y build-essential clang libicu-dev
-RUN apt install -y python3-dev fish
+# Install additional packages (consolidated for smaller image size)
+RUN apt update && apt install -y \
+    apt-utils curl wget vim git zsh sudo unzip \
+    build-essential clang libicu-dev \
+    python3-dev python3-pip fish \
+    && rm -rf /var/lib/apt/lists/*
 
 
 #Setup a user for inside the container
